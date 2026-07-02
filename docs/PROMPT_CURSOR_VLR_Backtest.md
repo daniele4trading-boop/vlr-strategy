@@ -80,6 +80,9 @@ ETHUSD:  {spread_pt: 180, commission_lot: 0,  slippage_atr: 0.05}
 - Verifica di coerenza col modello teorico: P(loss) deve restare < 44% (break-even strutturale calcolato) — se un simbolo supera il 44%, flag rosso nel report.
 
 ## M8 — Ottimizzazione
+- **Motore: Optuna (TPE sampler)**, 300 trial per simbolo, obiettivo = expectancy netta OOS media sui fold walk-forward. Grid search solo per lo studio di sensibilità finale.
+- **Selezione a plateau:** per ogni parametro della config vincente, riportare la curva expectancy vs parametro (±2 step); accettare solo config al centro di zone stabili, mai picchi isolati.
+- **Default aggiornati da ottimizzazione strutturale:** TP1Pct=0.40, split TP 30/20/50 (TP1Size=30, TP2Size=20, runner=50). BEOffsetATR resta da ottimizzare su dati reali (il modello teorico non prezza lo stop più stretto).
 - Walk-forward: 6 mesi in-sample / 2 mesi out-of-sample, rolling.
 - Parametri e range: `KDev` 1.5–2.5 (step 0.25), `SweepMinATR` 0.1–0.5, `VRetracePct` 0.50–0.80, `VMaxBars` 5–12, `BufferATR` 0.1–0.4, `SLMaxATR` 1.0–2.0, `TrailMult` 0.5–1.5, `TP1Pct` 0.40–0.70, `BEOffsetATR` 0.0–0.5, `BEMode` + `BEDelayPct` 0.2–0.5, `TriggerMode` A/B.
 - Criterio di selezione: expectancy netta OOS, penalizzata se n. trade OOS < 30 (statisticamente insufficiente).
